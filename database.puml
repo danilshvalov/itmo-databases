@@ -1,0 +1,248 @@
+@startuml
+
+hide circle
+' left to right direction
+skinparam roundcorner 0
+skinparam shadowing false
+skinparam linetype ortho
+skinparam FontSize 18
+skinparam defaultFontName JetBrains Mono
+scale 1.5
+
+skinparam class {
+    BackgroundColor white
+    BorderThickness 1.0
+    FontStyle bold
+}
+
+!procedure column($name, $name_size, $type, $type_size, $constraints="")
+    !while %strlen($name) < $name_size
+        !$name = $name + " "
+    !endwhile
+    !while %strlen($type) < $type_size
+        !$type = $type + " "
+    !endwhile
+    $name  $type  $constraints
+!endprocedure
+
+entity book {
+    column(id,               16, INTEGER,         13, PK)
+    --
+    column(title,            16, 'VARCHAR(256)',  13, NN)
+    column(description,      16, 'VARCHAR(1024)', 13)
+    column(isbn,             16, ISBN,            13)
+    column(publication_date, 16, DATE,            13)
+    column(page_count,       16, SMALLINT,        13)
+    column(publisher_id,     16, INTEGER,         13, 'FK NN')
+    column(series_id,        16, INTEGER,         13)
+    column(comment,          16, 'VARCHAR(1024)', 13)
+}
+
+entity genre {
+    column(id,          11, SMALLINT,        13, PK)
+    --
+    column(name,        11, 'VARCHAR(64)',   13, NN)
+    column(description, 11, 'VARCHAR(512)',  13)
+    column(comment,     11, 'VARCHAR(1024)', 13)
+}
+
+entity publisher {
+    column(id,              15, INTEGER,         13, PK)
+    --
+    column(name,            15, 'VARCHAR(128)',  13, NN)
+    column(description,     15, 'VARCHAR(1024)', 13)
+    column(foundation_date, 15, DATE,            13)
+    column(comment,         15, 'VARCHAR(1024)', 13)
+}
+
+entity book_genre {
+    column(book_id,  8, INTEGER,  8, 'PK FK')
+    column(genre_id, 8, SMALLINT, 8, 'PK FK')
+    --
+}
+
+entity book_copy {
+    column(id,               16, INTEGER,         13, PK)
+    --
+    column(book_id,          16, INTEGER,         13, 'FK NN')
+    column(receipt_date,     16, DATE,            13, NN)
+    column(write_off_date,   16, DATE,            13)
+    column(write_off_reason, 16, 'VARCHAR(256)',  13)
+    column(rack_number,      16, SMALLINT,        13)
+    column(shelf_number,     16, SMALLINT,        13)
+    column(comment,          16, 'VARCHAR(1024)', 13)
+}
+
+entity person {
+    column(id,         10, INTEGER,         13, PK)
+    --
+    column(first_name, 10, 'VARCHAR(128)',  13, NN)
+    column(last_name,  10, 'VARCHAR(128)',  13)
+    column(patronymic, 10, 'VARCHAR(128)',  13)
+    column(about,      10, 'VARCHAR(1024)', 13)
+    column(birth_date, 10, DATE,            13)
+    column(death_date, 10, DATE,            13)
+    column(comment,    10, 'VARCHAR(1024)', 13)
+}
+
+entity book_author {
+    column(book_id,   9, INTEGER, 7, 'PK FK')
+    column(person_id, 9, INTEGER, 7, 'PK FK')
+    --
+}
+
+entity book_translator {
+    column(book_id,   9, INTEGER, 7, 'PK FK')
+    column(person_id, 9, INTEGER, 7, 'PK FK')
+    --
+}
+
+entity reader_category {
+    column(id,          11, SMALLINT,         13, PK)
+    --
+    column(name,        11, 'VARCHAR(128)',  13, 'UQ NN')
+    column(description, 11, 'VARCHAR(1024)', 13)
+    column(comment,     11, 'VARCHAR(1024)', 13)
+}
+
+entity waitlist {
+    column(id,               16, INTEGER,         13, PK)
+    --
+    column(book_id,          16, INTEGER,         13, 'FK NN')
+    column(account_id,       16, INTEGER,         13, 'FK NN')
+    column(requested_amount, 16, SMALLINT,        13, NN)
+    column(received_amount,  16, SMALLINT,        13, NN)
+    column(start_date,       16, DATE,            13, NN)
+    column(end_date,         16, DATE,            13)
+    column(comment,          16, 'VARCHAR(1024)', 13)
+}
+
+entity checkout {
+    column(id,           12, INTEGER,         13, PK)
+    --
+    column(start_date,   12, DATE,            13, NN)
+    column(end_date,     12, DATE,            13, NN)
+    column(return_date,  12, DATE,            13)
+    column(book_copy_id, 12, INTEGER,         13, 'FK NN')
+    column(account_id,   12, INTEGER,         13, 'FK NN')
+    column(comment,      12, 'VARCHAR(1024)', 13)
+}
+
+entity hold {
+    column(id,           12, INTEGER,         13, PK)
+    --
+    column(start_date,   12, DATE,            13, NN)
+    column(end_date,     12, DATE,            13, NN)
+    column(book_copy_id, 12, INTEGER,         13, 'FK NN')
+    column(account_id,   12, INTEGER,         13, 'FK NN')
+    column(comment,      12, 'VARCHAR(1024)', 13)
+}
+
+entity book_series {
+    column(id,          11, INTEGER,          13, PK)
+    --
+    column(name,        11, 'VARCHAR(256)',  13, NN)
+    column(description, 11, 'VARCHAR(1024)', 13)
+    column(comment,     11, 'VARCHAR(1024)', 13)
+}
+
+entity account {
+    column(id,            13, INTEGER,        12, PK)
+    --
+    column(first_name,    13, 'VARCHAR(128)', 12, NN)
+    column(last_name,     13, 'VARCHAR(128)', 12, NN)
+    column(patronymic,    13, 'VARCHAR(128)', 12)
+    column(birth_date,    13, DATE,           12, NN)
+    column(email,         13, 'VARCHAR(256)', 12, 'UQ NN')
+    column(phone_number,  13, 'VARCHAR(16)',  12, 'UQ NN')
+    column(creation_date, 13, DATE,           12, NN)
+}
+
+entity reader {
+    column(account_id,    13, INTEGER,         13, 'PK FK')
+    --
+    column(ticket_number, 13, INTEGER,         13, 'UQ NN')
+    column(category_id,   13, SMALLINT,         13, 'FK NN')
+    column(comment,       13, 'VARCHAR(1024)', 13)
+}
+
+entity employee {
+    column(account_id,      15, INTEGER,        12, 'PK FK')
+    --
+    column(position,        15, 'VARCHAR(128)', 12, NN)
+    column(employment_date, 15, DATE,           12, NN)
+    column(dismissal_date,  15, DATE,           12)
+}
+
+entity table_info {
+    column(id,           12, SMALLINT,        13, PK)
+    --
+    column(number,       12, SMALLINT,        13, NN)
+    column(has_computer, 12, BOOLEAN,         13, NN)
+    column(comment,      12, 'VARCHAR(1024)', 13)
+}
+
+entity table_reservation {
+    column(id,         10, INTEGER,         13, PK)
+    --
+    column(account_id, 10, INTEGER,         13, 'FK NN')
+    column(table_id,   10, SMALLINT,        13, 'FK NN')
+    column(start_time, 10, DATETIME,        13, NN)
+    column(end_time,   10, DATETIME,        13, NN)
+    column(comment,    10, 'VARCHAR(1024)', 13)
+}
+
+entity audience {
+    column(id,            13, SMALLINT,        13,  PK)
+    --
+    column(number,        13, INTEGER,         13, NN)
+    column(seats_count,   13, SMALLINT,        13,  NN)
+    column(has_projector, 13, BOOLEAN,         13, NN)
+    column(comment,       13, 'VARCHAR(1024)', 13)
+}
+
+entity audience_reservation {
+    column(id,          11, INTEGER,         13, PK)
+    --
+    column(account_id,  11, INTEGER,         13, 'FK NN')
+    column(audience_id, 11, SMALLINT,        13, 'FK NN')
+    column(start_time,  11, DATETIME,        13, NN)
+    column(end_time,    11, DATETIME,        13, NN)
+    column(comment,     11, 'VARCHAR(1024)', 13)
+}
+
+reader ||--|| account
+employee ||--|| account
+
+book ||--o{ book_genre
+genre ||--o{ book_genre
+
+book ||--o{ book_author
+person ||--o{ book_author
+
+book ||--o{ book_translator
+person ||--o{ book_translator
+
+book ||--o{ waitlist
+reader ||--o{ waitlist
+publisher ||--o{ book
+
+book_copy ||--o{ checkout
+reader ||--o{ checkout
+
+book_copy ||--o{ hold
+reader ||--o{ hold
+
+reader_category ||--o{ reader
+book_series ||--o{ book
+book ||--o{ book_copy
+
+table_info ||--o{ table_reservation
+account ||--o{ table_reservation
+
+audience ||--o{ audience_reservation
+account ||--o{ audience_reservation
+
+person -[hidden]- employee
+
+@enduml
