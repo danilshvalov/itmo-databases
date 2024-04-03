@@ -237,7 +237,6 @@ book ||--o{ book_participant
 person ||--o{ book_participant
 participant_type ||--o{ book_participant
 
-book ||--o{ waitlist
 reader ||--o{ waitlist
 publisher ||--o{ book
 
