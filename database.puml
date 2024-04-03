@@ -7,7 +7,7 @@ skinparam shadowing false
 skinparam linetype ortho
 skinparam FontSize 18
 skinparam defaultFontName JetBrains Mono
-scale 1.5
+' scale 1.5
 
 skinparam class {
     BackgroundColor white
@@ -76,40 +76,42 @@ entity book_copy {
 entity person {
     column(id,         10, INTEGER,         13, PK)
     --
-    column(first_name, 10, 'VARCHAR(128)',  13, NN)
-    column(last_name,  10, 'VARCHAR(128)',  13)
-    column(patronymic, 10, 'VARCHAR(128)',  13)
+    column(first_name, 10, 'VARCHAR(50)',   13, NN)
+    column(last_name,  10, 'VARCHAR(50)',   13)
+    column(patronymic, 10, 'VARCHAR(50)',   13)
     column(about,      10, 'VARCHAR(1024)', 13)
     column(birth_date, 10, DATE,            13)
     column(death_date, 10, DATE,            13)
     column(comment,    10, 'VARCHAR(1024)', 13)
 }
 
-entity book_author {
-    column(book_id,   9, INTEGER, 7, 'PK FK')
-    column(person_id, 9, INTEGER, 7, 'PK FK')
+entity participant_type {
+    column(id,      7, TINYINT,         13, PK)
     --
+    column(name,    7, 'VARCHAR(64)',   13, 'UQ NN')
+    column(comment, 7, 'VARCHAR(1024)', 13)
 }
 
-entity book_translator {
+entity book_participant {
     column(book_id,   9, INTEGER, 7, 'PK FK')
     column(person_id, 9, INTEGER, 7, 'PK FK')
     --
+    column(type_id,   9, TINYINT, 7, 'FK NN')
 }
 
 entity reader_category {
     column(id,          11, SMALLINT,         13, PK)
     --
-    column(name,        11, 'VARCHAR(128)',  13, 'UQ NN')
-    column(description, 11, 'VARCHAR(1024)', 13)
+    column(name,        11, 'VARCHAR(64)',  13, 'UQ NN')
+    column(description, 11, 'VARCHAR(256)', 13)
     column(comment,     11, 'VARCHAR(1024)', 13)
 }
 
 entity waitlist {
     column(id,               16, INTEGER,         13, PK)
     --
-    column(book_id,          16, INTEGER,         13, 'FK NN')
-    column(account_id,       16, INTEGER,         13, 'FK NN')
+    column(book_id,          16, INTEGER,         13, 'NN')
+    column(reader_id,        16, INTEGER,         13, 'FK NN')
     column(requested_amount, 16, SMALLINT,        13, NN)
     column(received_amount,  16, SMALLINT,        13, NN)
     column(start_date,       16, DATE,            13, NN)
@@ -121,20 +123,10 @@ entity checkout {
     column(id,           12, INTEGER,         13, PK)
     --
     column(start_date,   12, DATE,            13, NN)
-    column(end_date,     12, DATE,            13, NN)
     column(return_date,  12, DATE,            13)
     column(book_copy_id, 12, INTEGER,         13, 'FK NN')
-    column(account_id,   12, INTEGER,         13, 'FK NN')
-    column(comment,      12, 'VARCHAR(1024)', 13)
-}
-
-entity hold {
-    column(id,           12, INTEGER,         13, PK)
-    --
-    column(start_date,   12, DATE,            13, NN)
-    column(end_date,     12, DATE,            13, NN)
-    column(book_copy_id, 12, INTEGER,         13, 'FK NN')
-    column(account_id,   12, INTEGER,         13, 'FK NN')
+    column(reader_id,    12, INTEGER,         13, 'FK NN')
+    column(employee_id,  12, INTEGER,         13, 'FK NN')
     column(comment,      12, 'VARCHAR(1024)', 13)
 }
 
@@ -149,29 +141,37 @@ entity book_series {
 entity account {
     column(id,            13, INTEGER,        12, PK)
     --
-    column(first_name,    13, 'VARCHAR(128)', 12, NN)
-    column(last_name,     13, 'VARCHAR(128)', 12, NN)
-    column(patronymic,    13, 'VARCHAR(128)', 12)
+    column(first_name,    13, 'VARCHAR(50)',  12, NN)
+    column(last_name,     13, 'VARCHAR(50)',  12, NN)
+    column(patronymic,    13, 'VARCHAR(50)',  12)
     column(birth_date,    13, DATE,           12, NN)
-    column(email,         13, 'VARCHAR(256)', 12, 'UQ NN')
+    column(email,         13, 'VARCHAR(320)', 12, 'UQ NN')
     column(phone_number,  13, 'VARCHAR(16)',  12, 'UQ NN')
     column(creation_date, 13, DATE,           12, NN)
 }
 
 entity reader {
-    column(account_id,    13, INTEGER,         13, 'PK FK')
+    column(id,            13, INTEGER,         13, PK)
     --
+    column(account_id,    13, INTEGER,         13, 'FK NN')
     column(ticket_number, 13, INTEGER,         13, 'UQ NN')
-    column(category_id,   13, SMALLINT,         13, 'FK NN')
+    column(category_id,   13, SMALLINT,        13, 'FK NN')
     column(comment,       13, 'VARCHAR(1024)', 13)
 }
 
 entity employee {
-    column(account_id,      15, INTEGER,        12, 'PK FK')
+    column(id,              15, INTEGER,  8, PK)
     --
-    column(position,        15, 'VARCHAR(128)', 12, NN)
-    column(employment_date, 15, DATE,           12, NN)
-    column(dismissal_date,  15, DATE,           12)
+    column(account_id,      15, INTEGER,  8, 'FK NN')
+    column(position_id,     15, SMALLINT, 8, 'FK NN')
+    column(employment_date, 15, DATE,     8, NN)
+    column(dismissal_date,  15, DATE,     8)
+}
+
+entity employee_position {
+    column(id,       8, SMALLINT,      12, PK)
+    --
+    column(position, 8, 'VARCHAR(50)', 12, NN)
 }
 
 entity table_info {
@@ -183,13 +183,13 @@ entity table_info {
 }
 
 entity table_reservation {
-    column(id,         10, INTEGER,         13, PK)
+    column(id,          11, INTEGER,         13, PK)
     --
-    column(account_id, 10, INTEGER,         13, 'FK NN')
-    column(table_id,   10, SMALLINT,        13, 'FK NN')
-    column(start_time, 10, DATETIME,        13, NN)
-    column(end_time,   10, DATETIME,        13, NN)
-    column(comment,    10, 'VARCHAR(1024)', 13)
+    column(reader_id,   11, INTEGER,         13, 'FK NN')
+    column(table_id,    11, SMALLINT,        13, 'FK NN')
+    column(start_time,  11, DATETIME,        13, NN)
+    column(end_time,    11, DATETIME,        13, NN)
+    column(comment,     11, 'VARCHAR(1024)', 13)
 }
 
 entity audience {
@@ -202,26 +202,40 @@ entity audience {
 }
 
 entity audience_reservation {
+    column(id,                 18, INTEGER,         13, PK)
+    --
+    column(reader_id,          18, INTEGER,         13, 'FK NN')
+    column(employee_id,        18, INTEGER,         13, 'FK NN')
+    column(audience_id,        18, SMALLINT,        13, 'FK NN')
+    column(event_id,           18, INTEGER,         13, 'FK NN')
+    column(start_time,         18, DATETIME,        13, NN)
+    column(end_time,           18, DATETIME,        13, NN)
+    column(participants_count, 18, TINYINT,         13, NN)
+    column(reason,             18, 'VARCHAR(128)',  13, NN)
+    column(comment,            18, 'VARCHAR(1024)', 13)
+}
+
+entity event {
     column(id,          11, INTEGER,         13, PK)
     --
-    column(account_id,  11, INTEGER,         13, 'FK NN')
-    column(audience_id, 11, SMALLINT,        13, 'FK NN')
-    column(start_time,  11, DATETIME,        13, NN)
-    column(end_time,    11, DATETIME,        13, NN)
+    column(name,        11, 'VARCHAR(64)',   13, NN)
+    column(description, 11, 'VARCHAR(128)',  13, NN)
+    column(start_date,  11, DATE,            13, NN)
+    column(end_date,    11, DATE,            13, NN)
+    column(reader_id,   11, INTEGER,         13, 'FK NN')
     column(comment,     11, 'VARCHAR(1024)', 13)
 }
 
 reader ||--|| account
 employee ||--|| account
+employee ||--|| employee_position
 
 book ||--o{ book_genre
 genre ||--o{ book_genre
 
-book ||--o{ book_author
-person ||--o{ book_author
-
-book ||--o{ book_translator
-person ||--o{ book_translator
+book ||--o{ book_participant
+person ||--o{ book_participant
+participant_type ||--o{ book_participant
 
 book ||--o{ waitlist
 reader ||--o{ waitlist
@@ -229,20 +243,20 @@ publisher ||--o{ book
 
 book_copy ||--o{ checkout
 reader ||--o{ checkout
-
-book_copy ||--o{ hold
-reader ||--o{ hold
+employee ||--o{ checkout
 
 reader_category ||--o{ reader
 book_series ||--o{ book
 book ||--o{ book_copy
 
 table_info ||--o{ table_reservation
-account ||--o{ table_reservation
+reader ||--o{ table_reservation
 
 audience ||--o{ audience_reservation
-account ||--o{ audience_reservation
+reader ||--o{ audience_reservation
+employee ||--o{ audience_reservation
+event ||--o{ audience_reservation
 
-person -[hidden]- employee
+reader ||--o{ event
 
 @enduml
