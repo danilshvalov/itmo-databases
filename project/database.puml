@@ -41,7 +41,7 @@ entity book {
 entity genre {
     column(id,          11, SMALLINT,        13, PK)
     --
-    column(name,        11, 'VARCHAR(64)',   13, NN)
+    column(name,        11, 'VARCHAR(64)',   13, 'UQ NN')
     column(description, 11, 'VARCHAR(512)',  13)
     column(comment,     11, 'VARCHAR(1024)', 13)
 }
@@ -114,16 +114,16 @@ entity waitlist {
     column(reader_id,        16, INTEGER,         13, 'FK NN')
     column(requested_amount, 16, SMALLINT,        13, NN)
     column(received_amount,  16, SMALLINT,        13, NN)
-    column(start_date,       16, DATE,            13, NN)
-    column(end_date,         16, DATE,            13)
+    column(start_date,       16, DATETIME,        13, NN)
+    column(end_date,         16, DATETIME,        13)
     column(comment,          16, 'VARCHAR(1024)', 13)
 }
 
 entity checkout {
     column(id,           12, INTEGER,         13, PK)
     --
-    column(start_date,   12, DATE,            13, NN)
-    column(return_date,  12, DATE,            13)
+    column(start_date,   12, DATETIME,        13, NN)
+    column(return_date,  12, DATETIME,        13)
     column(book_copy_id, 12, INTEGER,         13, 'FK NN')
     column(reader_id,    12, INTEGER,         13, 'FK NN')
     column(employee_id,  12, INTEGER,         13, 'FK NN')
@@ -226,18 +226,20 @@ entity event {
     column(comment,     11, 'VARCHAR(1024)', 13)
 }
 
-reader ||--|| account
-employee ||--|| account
-employee ||--|| employee_position
+reader ||-up|| account
+employee ||-up|| account
+employee ||-up-|| employee_position
 
-book ||--o{ book_genre
+book ||-up-o{ book_genre
 genre ||--o{ book_genre
 
-book ||--o{ book_participant
+book ||-left-o{ book_participant
 person ||--o{ book_participant
 participant_type ||--o{ book_participant
 
 reader ||--o{ waitlist
+book ||--o{ waitlist
+
 publisher ||--o{ book
 
 book_copy ||--o{ checkout
@@ -246,12 +248,12 @@ employee ||--o{ checkout
 
 reader_category ||--o{ reader
 book_series ||--o{ book
-book ||--o{ book_copy
+book ||-down-o{ book_copy
 
-table_info ||--o{ table_reservation
+table_info ||-up-o{ table_reservation
 reader ||--o{ table_reservation
 
-audience ||--o{ audience_reservation
+audience ||-up-o{ audience_reservation
 reader ||--o{ audience_reservation
 employee ||--o{ audience_reservation
 event ||--o{ audience_reservation

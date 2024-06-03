@@ -1,0 +1,128 @@
+@startuml
+
+hide circle
+' left to right direction
+skinparam roundcorner 0
+skinparam shadowing false
+/'
+ ' skinparam linetype ortho
+ '/
+skinparam FontSize 18
+skinparam defaultFontName JetBrains Mono
+' scale 1.5
+
+skinparam class {
+    BackgroundColor white
+    BorderThickness 1.0
+    FontStyle bold
+}
+
+!procedure column($name, $name_size, $type, $type_size, $constraints="")
+    !while %strlen($name) < $name_size
+        !$name = $name + " "
+    !endwhile
+    !while %strlen($type) < $type_size
+        !$type = $type + " "
+    !endwhile
+    $name  $type  $constraints
+!endprocedure
+
+entity book {
+    column(id,               16, INTEGER,         12, PK)
+    --
+    column(title,            16, 'VARCHAR(256)',  12, NN)
+    column(publication_date, 16, DATE,            12)
+}
+
+entity author {
+    column(id,         10, INTEGER,        12, PK)
+    --
+    column(full_name,  10, 'VARCHAR(150)', 12, NN)
+    column(birth_date, 10, DATE,           12)
+    column(death_date, 10, DATE,           12)
+}
+
+entity book_author {
+    column(book_id,   9, INTEGER, 7, 'PK FK')
+    column(author_id, 9, INTEGER, 7, 'PK FK')
+    --
+}
+
+entity genre {
+    column(id,   4, INTEGER,       11, PK)
+    --
+    column(name, 4, 'VARCHAR(64)', 11, 'UQ NN')
+}
+
+entity book_genre {
+    column(book_id,  8, INTEGER, 7, 'PK FK')
+    column(genre_id, 8, INTEGER, 7, 'PK FK')
+    --
+}
+
+entity checkout {
+    column(date_id,            18, INTEGER, 7, 'PK FK')
+    column(book_id,            18, INTEGER, 7, 'PK FK')
+    column(reader_id,          18, INTEGER, 7, 'PK FK')
+    column(employee_id,        18, INTEGER, 7, 'PK FK')
+    column(checkout_period_id, 18, INTEGER, 7, 'PK FK')
+    column(reader_age_id,      18, INTEGER, 7, 'PK FK')
+    --
+    column(is_returned,        18, BOOLEAN, 7, 'NN')
+    column(returned_on_time,   18, BOOLEAN, 7)
+    column(return_date_id,     18, INTEGER, 7, 'FK')
+}
+
+entity reader {
+    column(id,         9, INTEGER,        12, PK)
+    --
+    column(full_name,  9, 'VARCHAR(150)', 12, NN)
+}
+
+entity employee {
+    column(id,        9, INTEGER,        12, PK)
+    --
+    column(full_name, 9, 'VARCHAR(150)', 12, NN)
+}
+
+entity date_info {
+    column(id,         10, INTEGER,  8, PK)
+    --
+    column(date,       10, DATE,     8, NN)
+    column(time,       10, TIME,     8, NN)
+    column(day,        10, SMALLINT, 8, NN)
+    column(week_day,   10, SMALLINT, 8, NN)
+    column(month,      10, SMALLINT, 8, NN)
+    column(quarter,    10, SMALLINT, 8, NN)
+    column(year,       10, SMALLINT, 8, NN)
+    column(is_holiday, 10, BOOLEAN,  8, NN)
+}
+
+entity checkout_period {
+    column(id,     6, INTEGER, 7, PK)
+    --
+    column(days,   6, INTEGER, 7, NN)
+    column(months, 6, INTEGER, 7, NN)
+}
+
+entity reader_age {
+    column(id,        9, INTEGER,     11, PK)
+    --
+    column(age,       9, SMALLINT,    11, NN)
+    column(age_group, 9, age_group_e, 11, NN)
+}
+
+checkout -up-> book
+checkout -left-> reader
+checkout --> employee
+checkout -right-> date_info
+checkout --> checkout_period
+checkout --> reader_age
+
+book_author --> book
+book_author --> author
+
+book_genre --> book
+book_genre --> genre
+
+@enduml
